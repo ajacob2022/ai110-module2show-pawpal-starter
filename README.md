@@ -80,12 +80,32 @@ Morning walk due 2026-11-16 done=False
 ## Testing PawPal+
 
 ```bash
-pytest
+python -m pytest
 ```
 
+The tests cover:
+
+- Task completion and adding or removing tasks
+- Sorting tasks chronologically by time
+- Filtering by pet name and completion status
+- Priority selection within the time budget, skipped tasks, and completed or future-dated tasks being left out
+- Recurrence: daily tasks repeat the next day, weekly tasks in seven days, one-time tasks do not repeat
+- Conflict detection for tasks at the same time, including no false warnings for completed tasks or different days
+- Edge cases such as a pet with no tasks
+
 ```
-13 passed
+============================= test session starts =============================
+platform win32 -- Python 3.12.5, pytest-9.1.1, pluggy-1.7.0
+rootdir: C:\Users\Adam\Desktop\project2_codepath\ai110-module2show-pawpal-starter
+plugins: anyio-4.12.1
+collected 18 items
+
+tests\test_pawpal.py ..................                                  [100%]
+
+============================= 18 passed in 0.09s ==============================
 ```
+
+Confidence level: 4 out of 5 stars. The core scheduling rules are tested, but invalid input (such as a bad time format or priority) and overlapping durations are not.
 
 ## Smarter Scheduling
 

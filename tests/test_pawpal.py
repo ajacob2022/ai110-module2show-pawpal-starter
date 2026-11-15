@@ -93,3 +93,33 @@ def test_conflict_detected():
 def test_no_conflict():
     scheduler = Scheduler(Owner("Jordan", 100, [Pet("Mochi", "dog", [Task("Walk", 20, "09:00")])]))
     assert scheduler.detect_conflicts() == []
+
+
+def test_pet_with_no_tasks():
+    scheduler = Scheduler(Owner("Jordan", 60, [Pet("Mochi", "dog")]))
+    assert scheduler.build_plan() == []
+    assert scheduler.detect_conflicts() == []
+    assert scheduler.sort_by_time(scheduler.owner.get_all_tasks()) == []
+
+
+def test_weekly_task_recurs_in_seven_days():
+    pet = Pet("Mochi", "dog", [Task("Groom", 30, frequency="weekly")])
+    Scheduler(Owner("Jordan", 60, [pet])).mark_task_complete(pet, pet.tasks[0])
+    assert pet.tasks[-1].due_date == date.today() + timedelta(days=7)
+
+
+def test_future_task_not_in_todays_plan():
+    pet = Pet("Mochi", "dog", [Task("Walk", 20, due_date=date.today() + timedelta(days=1))])
+    assert Scheduler(Owner("Jordan", 60, [pet])).build_plan() == []
+
+
+def test_completed_task_not_flagged_as_conflict():
+    scheduler, mochi = make_scheduler()
+    mochi.tasks[0].mark_complete()
+    assert scheduler.detect_conflicts() == []
+
+
+def test_same_time_on_different_days_is_not_a_conflict():
+    tomorrow = date.today() + timedelta(days=1)
+    pet = Pet("Mochi", "dog", [Task("Walk", 20, "09:00"), Task("Feed", 5, "09:00", due_date=tomorrow)])
+    assert Scheduler(Owner("Jordan", 60, [pet])).detect_conflicts() == []
