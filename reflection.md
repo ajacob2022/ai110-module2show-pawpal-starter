@@ -26,7 +26,7 @@ The scheduler considers the owner's available minutes and each task's priority a
 
 **b. Tradeoffs**
 
-It picks tasks greedily by priority and skips any task that does not fit, instead of searching for the best combination. This is simple and predictable, which suits a daily pet-care plan.
+It picks tasks greedily by priority and skips any task that does not fit, instead of searching for the best combination. Conflict detection only flags tasks that share the exact same start time and does not check whether durations overlap. Both choices keep the code simple and predictable, which suits a daily pet-care plan.
 
 ---
 

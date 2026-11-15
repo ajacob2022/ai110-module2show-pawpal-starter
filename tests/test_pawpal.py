@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from pawpal_system import Owner, Pet, Scheduler, Task
 
 
@@ -46,3 +48,48 @@ def test_completed_tasks_excluded():
 
 def test_empty_plan_explanation():
     assert Scheduler(Owner("Jordan", 60)).explain_plan() == "No tasks fit in the available time."
+
+
+def make_scheduler():
+    mochi = Pet("Mochi", "dog", [Task("Walk", 20, "09:00"), Task("Meds", 5, "07:00")])
+    luna = Pet("Luna", "cat", [Task("Feed", 10, "09:00")])
+    return Scheduler(Owner("Jordan", 100, [mochi, luna])), mochi
+
+
+def test_sort_by_time():
+    scheduler, _ = make_scheduler()
+    times = [t.time for _, t in scheduler.sort_by_time(scheduler.owner.get_all_tasks())]
+    assert times == ["07:00", "09:00", "09:00"]
+
+
+def test_filter_by_pet_and_status():
+    scheduler, mochi = make_scheduler()
+    mochi.tasks[0].mark_complete()
+    assert len(scheduler.filter_tasks(pet_name="Mochi")) == 2
+    assert [t.description for _, t in scheduler.filter_tasks(completed=True)] == ["Walk"]
+
+
+def test_daily_task_recurs_tomorrow():
+    scheduler, mochi = make_scheduler()
+    scheduler.mark_task_complete(mochi, mochi.tasks[0])
+    assert mochi.tasks[-1].due_date == date.today() + timedelta(days=1)
+    assert not mochi.tasks[-1].completed
+
+
+def test_one_time_task_does_not_recur():
+    pet = Pet("Mochi", "dog", [Task("Vet", 30, frequency="once")])
+    scheduler = Scheduler(Owner("Jordan", 100, [pet]))
+    scheduler.mark_task_complete(pet, pet.tasks[0])
+    assert len(pet.tasks) == 1
+
+
+def test_conflict_detected():
+    scheduler, _ = make_scheduler()
+    warnings = scheduler.detect_conflicts()
+    assert len(warnings) == 1
+    assert "09:00" in warnings[0]
+
+
+def test_no_conflict():
+    scheduler = Scheduler(Owner("Jordan", 100, [Pet("Mochi", "dog", [Task("Walk", 20, "09:00")])]))
+    assert scheduler.detect_conflicts() == []

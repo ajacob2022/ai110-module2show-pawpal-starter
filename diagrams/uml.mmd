@@ -22,11 +22,16 @@ classDiagram
         +str frequency
         +str priority
         +bool completed
+        +date due_date
         +mark_complete()
     }
 
     class Scheduler {
         +Owner owner
+        +sort_by_time(pairs) list~Pet_Task~
+        +filter_tasks(pet_name, completed) list~Pet_Task~
+        +mark_task_complete(pet, task)
+        +detect_conflicts() list~str~
         +build_plan() list~Pet_Task~
         +explain_plan() str
     }

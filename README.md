@@ -49,11 +49,32 @@ Output of `python main.py`:
 ```
 Today's Schedule
 ================
+07:30 - Feeding for Luna (10 min, daily) [priority: high]
 07:30 - Morning walk for Mochi (30 min, daily) [priority: high]
-08:00 - Feeding for Luna (10 min, daily) [priority: high]
 18:00 - Play time for Luna (20 min, daily) [priority: medium]
 Used 60 of 90 minutes, highest priority first.
 Skipped (not enough time): Grooming
+
+All tasks sorted by time
+07:30 Morning walk (Mochi)
+07:30 Feeding (Luna)
+16:00 Grooming (Mochi)
+18:00 Play time (Luna)
+
+Luna's tasks
+Play time
+Feeding
+
+Conflicts
+Warning: Morning walk (Mochi), Feeding (Luna) are all scheduled at 07:30 on 2026-11-15
+
+Completed tasks
+Morning walk (Mochi)
+
+Mochi's tasks after completing the walk
+Grooming due 2026-11-15 done=False
+Morning walk due 2026-11-15 done=True
+Morning walk due 2026-11-16 done=False
 ```
 
 ## Testing PawPal+
@@ -63,17 +84,18 @@ pytest
 ```
 
 ```
-7 passed
+13 passed
 ```
 
 ## Smarter Scheduling
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | `Scheduler.build_plan` | Chosen by priority (high first), then shorter duration; the final plan is ordered by task time |
-| Filtering | `Scheduler.build_plan` | Skips completed tasks and tasks that no longer fit the time available |
-| Conflict handling | `Scheduler.build_plan` | Tasks that exceed the owner's available minutes are skipped and reported |
-| Recurring tasks | `Task.frequency` | Stored and displayed; no automatic rescheduling |
+| Sorting | `Scheduler.sort_by_time` | Sorts (pet, task) pairs by their `HH:MM` time; zero-padded times sort correctly as text |
+| Filtering | `Scheduler.filter_tasks` | Filters by pet name and/or completion status |
+| Recurring tasks | `Scheduler.mark_task_complete` | Completing a daily or weekly task adds a copy due 1 or 7 days later using `timedelta`; one-time tasks do not repeat |
+| Conflict detection | `Scheduler.detect_conflicts` | Returns a warning string for every group of pending tasks with the same date and start time, across any pets |
+| Plan building | `Scheduler.build_plan` | Picks tasks due today by priority within the time budget, then orders them by time |
 
 ## Demo Walkthrough
 
