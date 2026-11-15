@@ -42,53 +42,43 @@ pip install -r requirements.txt
 6. Connect your logic to the Streamlit UI in `app.py`.
 7. Refine UML so it matches what you actually built.
 
-## 🖥️ Sample Output
+## Sample Output
 
-Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
+Output of `python main.py`:
 
 ```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
+Today's Schedule
+================
+07:30 - Morning walk for Mochi (30 min, daily) [priority: high]
+08:00 - Feeding for Luna (10 min, daily) [priority: high]
+18:00 - Play time for Luna (20 min, daily) [priority: medium]
+Used 60 of 90 minutes, highest priority first.
+Skipped (not enough time): Grooming
 ```
 
-## 🧪 Testing PawPal+
+## Testing PawPal+
 
 ```bash
-# Run the full test suite:
 pytest
-
-# Run with coverage:
-pytest --cov
 ```
 
-Sample test output:
-
 ```
-# Paste your pytest output here
+7 passed
 ```
 
-## 📐 Smarter Scheduling
-
-> Fill in once you've implemented scheduling logic.
+## Smarter Scheduling
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Task sorting | `Scheduler.build_plan` | Chosen by priority (high first), then shorter duration; the final plan is ordered by task time |
+| Filtering | `Scheduler.build_plan` | Skips completed tasks and tasks that no longer fit the time available |
+| Conflict handling | `Scheduler.build_plan` | Tasks that exceed the owner's available minutes are skipped and reported |
+| Recurring tasks | `Task.frequency` | Stored and displayed; no automatic rescheduling |
 
-## 📸 Demo Walkthrough
+## Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
-
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
-
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+1. Run `python main.py` for the terminal demo, or `streamlit run app.py` for the UI.
+2. Enter the owner name, minutes available, pet name and species.
+3. Add tasks with a title, duration and priority.
+4. Click "Generate schedule" to see the ordered plan with start times.
+5. Tasks that do not fit are listed as skipped.

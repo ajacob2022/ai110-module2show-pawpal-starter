@@ -4,13 +4,17 @@
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+The design has four classes. Owner holds the owner's name, daily available time, and their pets. Pet holds the pet's name, species, and its care tasks. Task holds a description, time, frequency, duration, priority, and completion status. Scheduler takes an Owner and builds a daily plan from their tasks, then explains why it chose that plan.
+
+Three core actions a user should be able to perform:
+
+- Add an owner and a pet.
+- Add care tasks (walks, feeding, meds) to a pet with a duration and priority.
+- Generate and view today's schedule along with an explanation of it.
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+The design stayed close to the UML. The main addition was a module-level priority ordering used by Scheduler to sort tasks, which kept the Task class simple.
 
 ---
 
@@ -18,13 +22,11 @@
 
 **a. Constraints and priorities**
 
-- What constraints does your scheduler consider (for example: time, priority, preferences)?
-- How did you decide which constraints mattered most?
+The scheduler considers the owner's available minutes and each task's priority and duration. Time is a hard limit, and priority decides which tasks get that time first.
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+It picks tasks greedily by priority and skips any task that does not fit, instead of searching for the best combination. This is simple and predictable, which suits a daily pet-care plan.
 
 ---
 
@@ -32,13 +34,11 @@
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+I used an AI assistant to draft the UML, generate the class skeleton, and implement the scheduler and tests. Prompts that named the exact classes and constraints worked best. I also used AI to corrrect an error that was preventing the app from running.
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+I kept the scheduler to a simple greedy approach rather than a more complex optimization. I verified the behavior by running the tests and the Streamlit app.
 
 ---
 
@@ -46,13 +46,11 @@
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+I tested task completion, adding and removing tasks, priority ordering, the time limit, excluding completed tasks, and the empty-plan message. These cover the core scheduling rules.
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+I am confident in the core behavior. Next I would test invalid priorities, zero available time, and duplicate task descriptions.
 
 ---
 
@@ -60,12 +58,12 @@
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+The clean separation between the logic layer and the Streamlit UI.
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+I would add recurring tasks, preferred times, and per-pet plans.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+Designing the classes first made the implementation and tests straightforward.
