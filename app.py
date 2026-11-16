@@ -52,27 +52,59 @@ if owner.pets:
 else:
     st.info("Add a pet before adding tasks.")
 
-tasks = owner.get_all_tasks()
-if tasks:
+scheduler = Scheduler(owner)
+
+st.subheader("Tasks")
+col1, col2 = st.columns(2)
+with col1:
+    pet_filter = st.selectbox("Show pet", ["All"] + [p.name for p in owner.pets])
+with col2:
+    status_filter = st.selectbox("Show status", ["All", "Pending", "Completed"])
+
+shown = scheduler.filter_tasks(
+    pet_name=None if pet_filter == "All" else pet_filter,
+    completed={"All": None, "Pending": False, "Completed": True}[status_filter],
+)
+shown = scheduler.sort_by_time(shown)
+
+if shown:
     st.table(
         [
             {
                 "pet": p.name,
                 "description": t.description,
                 "time": t.time,
+                "due": str(t.due_date),
                 "duration_minutes": t.duration_minutes,
                 "frequency": t.frequency,
                 "priority": t.priority,
+                "done": t.completed,
             }
-            for p, t in tasks
+            for p, t in shown
         ]
     )
+else:
+    st.info("No tasks match.")
 
-for warning in Scheduler(owner).detect_conflicts():
-    st.warning(warning)
+pending = scheduler.filter_tasks(completed=False)
+if pending:
+    labels = [f"{t.time} {t.description} ({p.name})" for p, t in pending]
+    choice = st.selectbox("Mark a task complete", labels)
+    if st.button("Complete task"):
+        pet, task = pending[labels.index(choice)]
+        scheduler.mark_task_complete(pet, task)
+        st.rerun()
+
+conflicts = scheduler.detect_conflicts()
+for warning in conflicts:
+    st.warning(warning + ". Move one of them to a different time.")
 
 st.divider()
 st.subheader("Today's Schedule")
 
 if st.button("Generate schedule"):
-    st.text(Scheduler(owner).explain_plan())
+    if conflicts:
+        st.warning("Some tasks share a start time; resolve the conflicts above for a cleaner day.")
+    else:
+        st.success("No conflicts found.")
+    st.text(scheduler.explain_plan())

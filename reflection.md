@@ -14,7 +14,7 @@ Three core actions a user should be able to perform:
 
 **b. Design changes**
 
-The design stayed close to the UML. The main addition was a module-level priority ordering used by Scheduler to sort tasks, which kept the Task class simple.
+The design stayed close to the UML, but Task gained time, frequency, and due_date fields, and Scheduler gained sorting, filtering, recurrence, and conflict methods. Owner.get_all_tasks also changed to return (pet, task) pairs so the scheduler and UI can show which pet each task belongs to.
 
 ---
 
@@ -34,11 +34,11 @@ It picks tasks greedily by priority and skips any task that does not fit, instea
 
 **a. How you used AI**
 
-I used an AI assistant to draft the UML, generate the class skeleton, and implement the scheduler and tests. Prompts that named the exact classes and constraints worked best. I also used AI to corrrect an error that was preventing the app from running.
+I used an AI assistant to draft the UML, generate the class skeleton, implement the scheduler and tests, and connect the Streamlit UI. Agent-style multi-file edits were the most effective feature, since changes like adding a due date touched the logic, tests, UI, and docs together. Prompts that named the exact classes and constraints worked best. Working one phase at a time kept each change small and easy to review. I also used AI to corrrect an error that was preventing the app from running.
 
 **b. Judgment and verification**
 
-I kept the scheduler to a simple greedy approach rather than a more complex optimization. I verified the behavior by running the tests and the Streamlit app.
+I kept the scheduler to a simple greedy approach rather than a more complex optimization, and kept conflict detection to exact time matches rather than overlap checks, because the simpler versions are easier to read and test. I verified the behavior by running the tests and the app.
 
 ---
 
@@ -46,11 +46,11 @@ I kept the scheduler to a simple greedy approach rather than a more complex opti
 
 **a. What you tested**
 
-I tested task completion, adding and removing tasks, priority ordering, the time limit, excluding completed tasks, and the empty-plan message. These cover the core scheduling rules.
+I tested task completion, adding and removing tasks, sorting, filtering, priority ordering, the time limit, daily and weekly recurrence, conflict detection, and edge cases like a pet with no tasks. These cover the core scheduling rules.
 
 **b. Confidence**
 
-I am confident in the core behavior. Next I would test invalid priorities, zero available time, and duplicate task descriptions.
+I am confident in the core behavior (4 out of 5). Next I would test invalid times and priorities, zero available time, duplicate task descriptions, and overlapping durations.
 
 ---
 
@@ -62,8 +62,8 @@ The clean separation between the logic layer and the Streamlit UI.
 
 **b. What you would improve**
 
-I would add recurring tasks, preferred times, and per-pet plans.
+I would add overlap-aware conflict detection, input validation, preferred times, and per-pet plans.
 
 **c. Key takeaway**
 
-Designing the classes first made the implementation and tests straightforward.
+As the lead architect, I set the design and constraints and reviewed what the AI produced. Designing the classes first made the implementation and tests straightforward, and AI worked best when the design was already clear.

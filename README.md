@@ -22,6 +22,16 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Features
+
+- Owner, pet, and task management with duration, time, frequency, and priority
+- Sorting by time (`Scheduler.sort_by_time`)
+- Filtering by pet and completion status (`Scheduler.filter_tasks`)
+- Priority-based daily plan within the owner's available minutes (`Scheduler.build_plan`)
+- Daily and weekly recurrence (`Scheduler.mark_task_complete`)
+- Conflict warnings for tasks at the same time (`Scheduler.detect_conflicts`)
+- Plan explanation with skipped tasks (`Scheduler.explain_plan`)
+
 ## Getting started
 
 ### Setup
@@ -119,8 +129,60 @@ Confidence level: 4 out of 5 stars. The core scheduling rules are tested, but in
 
 ## Demo Walkthrough
 
-1. Run `python main.py` for the terminal demo, or `streamlit run app.py` for the UI.
-2. Enter the owner name, minutes available, pet name and species.
-3. Add tasks with a title, duration and priority.
-4. Click "Generate schedule" to see the ordered plan with start times.
-5. Tasks that do not fit are listed as skipped.
+**Main UI features**
+
+- Set the owner name and minutes available today.
+- Add pets, then add tasks to a chosen pet with a description, duration, priority, time, and frequency.
+- View tasks sorted by time, filtered by pet and by pending or completed status.
+- Mark tasks complete; daily and weekly tasks automatically get a next occurrence.
+- See a warning when tasks share the same start time.
+- Generate today's schedule with an explanation.
+
+**Example workflow**
+
+1. Run `streamlit run app.py`.
+2. Add a pet, for example Mochi the dog.
+3. Add tasks such as "Morning walk" at 07:30 (high priority) and "Grooming" at 16:00 (low priority).
+4. Add a second task at 07:30 to see the conflict warning.
+5. Click "Generate schedule" to see tasks ordered by time, with anything that did not fit listed as skipped.
+6. Mark the walk complete and watch tomorrow's walk appear in the task table.
+
+**Key Scheduler behaviors shown**
+
+- Sorting: tasks always display in chronological order.
+- Conflict warnings: tasks at the same date and time are flagged without stopping the app.
+- Recurrence: completing a daily task creates a copy due the next day.
+- Budgeting: lower priority tasks are skipped when time runs out.
+
+**Sample CLI output (`python main.py`)**
+
+```
+Today's Schedule
+================
+07:30 - Feeding for Luna (10 min, daily) [priority: high]
+07:30 - Morning walk for Mochi (30 min, daily) [priority: high]
+18:00 - Play time for Luna (20 min, daily) [priority: medium]
+Used 60 of 90 minutes, highest priority first.
+Skipped (not enough time): Grooming
+
+All tasks sorted by time
+07:30 Morning walk (Mochi)
+07:30 Feeding (Luna)
+16:00 Grooming (Mochi)
+18:00 Play time (Luna)
+
+Luna's tasks
+Play time
+Feeding
+
+Conflicts
+Warning: Morning walk (Mochi), Feeding (Luna) are all scheduled at 07:30 on 2026-11-15
+
+Completed tasks
+Morning walk (Mochi)
+
+Mochi's tasks after completing the walk
+Grooming due 2026-11-15 done=False
+Morning walk due 2026-11-15 done=True
+Morning walk due 2026-11-16 done=False
+```
